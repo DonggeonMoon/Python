@@ -3,9 +3,10 @@ import zipfile
 from xml.etree import ElementTree
 import json
 import pymysql
+import time
 
 #고유번호 Zip 파일 내려받기
-crtfc_key = "***************************************" #API 인증키(openapi.dart.or.kr에서 발급)
+crtfc_key = "*******************************************" #API 인증키(openapi.dart.or.kr에서 발급)
 api = "https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key={crtfc_key}"
 url = api.format(crtfc_key=crtfc_key)
 
@@ -41,11 +42,14 @@ for corp_code in corp_code_dic.values():
             continue
         df.append([data["stock_code"], data["stock_name"], corp_cls, corp_code])
         print(data["stock_code"], data["stock_name"], corp_cls, corp_code)
+        
+        time.sleep(1) #크롤링 속도 제한
+        
     except:
         continue
 
 #DBMS에 저장
-conn = pymysql.connect(host="127.0.0.1", user="root", password="*********", db="****", charset="utf8")
+conn = pymysql.connect(host="127.0.0.1", user="root", password="*******************************************", db="****************", charset="utf8")
 
 for row in df:
     cur = conn.cursor()
