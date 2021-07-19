@@ -18,12 +18,12 @@ def reprt_code_chk():
         print("잘못 입력하셨습니다.")
         return reprt_code_chk()
     
-crtfc_key = "*****************************" #API 인증키(openapi.dart.or.kr에서 발급)
+crtfc_key = "*******************************************" #API 인증키(openapi.dart.or.kr에서 발급)
 bsns_year = str(input("연도를 입력하세요:")) #사업연도
 reprt_code = reprt_code_chk() #보고서 코드
 
 #종목정보 DBMS에서 불러오기
-conn = pymysql.connect(host="127.0.0.1", user="root", password="**********", db="mdgdb", charset="utf8")
+conn = pymysql.connect(host="127.0.0.1", user="root", password="*******************************************", db="*********", charset="utf8")
 cur = conn.cursor()
 cur.execute("select * from stock_info")
 
@@ -63,15 +63,17 @@ for k, v in corp_code_dic.items():
         df.append([stock_code, corp_code, corp_cls, num_total])
         print(stock_code, corp_code, corp_cls, num_total)
         
+        time.sleep(1) #크롤링 속도 제한
+        
     except:
         continue
     
 #DBMS에 저장
-conn = pymysql.connect(host="127.0.0.1", user="root", password="***********", db="mdgdb", charset="utf8")
+conn = pymysql.connect(host="127.0.0.1", user="root", password="*******************************************", db="*********", charset="utf8")
 cur = conn.cursor()
 
 for row in df:
-    cur.execute("insert into data(stock_code, stock_name, corp_cls, bsns_year, total_emp) values('"+row[0]+"', '"+row[1]+"', '"+row[2]+"', '"+row[3]+"')")
+    cur.execute("insert into hrr(stock_code, stock_name, corp_cls, bsns_year, total_emp) values('"+row[0]+"', '"+row[1]+"', '"+row[2]+"', '"+row[3]+"')")
 
 conn.commit()
 conn.close()
