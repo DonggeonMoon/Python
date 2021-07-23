@@ -1,3 +1,4 @@
+from connect_info import *
 import requests
 import zipfile
 from xml.etree import ElementTree
@@ -6,7 +7,7 @@ import pymysql
 import time
 
 #고유번호 Zip 파일 내려받기
-crtfc_key = "**********************************************" #API 인증키(openapi.dart.or.kr에서 발급)
+crtfc_key = connect_info["crtfc_key"] #API 인증키(openapi.dart.or.kr에서 발급)
 api = "https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key={crtfc_key}"
 url = api.format(crtfc_key=crtfc_key)
 
@@ -49,10 +50,10 @@ for corp_code in corp_code_dic.values():
         continue
 
 #DBMS에 저장
-conn = pymysql.connect(host="127.0.0.1", user="root", password="******", db="*********", charset="utf8")
+conn = pymysql.connect(host=connect_info["host"], user=connect_info["user"], password=connect_info["password"], db=connect_info["db"], charset=connect_info["charset"])
+cur = conn.cursor()
 
 for row in df:
-    cur = conn.cursor()
     cur.execute("insert into stock_info values('" + row[0] + "', '" + row[1] + "', '" + row[2] + "', '" + row[3] +"')")
 
 conn.commit()
