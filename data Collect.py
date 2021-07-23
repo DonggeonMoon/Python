@@ -1,3 +1,4 @@
+from connect_info import *
 import pymysql
 import requests
 from xml.etree import ElementTree
@@ -21,16 +22,16 @@ def reprt_code_chk():
     
 def connect_db():
     
-    conn = pymysql.connect(host="127.0.0.1", user="root", password="******************************************", db="*******", charset="utf8")
-    cur = conn.cursor()
+    conn = pymysql.connect(host=connect_info["host"], user=connect_info["user"], password=connect_info["password"], db=connect_info["db"], charset=connect_info["charset"])
+    return conn
     
-crtfc_key = "******************************************" #API 인증키(openapi.dart.or.kr에서 발급)
+crtfc_key = connect_info["crtfc_key"] #API 인증키(openapi.dart.or.kr에서 발급)
 bsns_year = str(input("연도를 입력하세요:")) #사업연도
 reprt_code = reprt_code_chk() #보고서 코드
 
 #종목정보 DBMS에서 불러오기
-
-connect_db()
+conn = connect_db()
+cur = conn.cursor()
 cur.execute("select * from stock_info")
 
 corp_code_dic = {}
@@ -76,7 +77,8 @@ for k, v in corp_code_dic.items():
         continue
     
 #DBMS에 저장
-connect_db()
+conn = connect_db()
+cur = conn.cursor()
 
 for row in df:
     cur.execute("insert into hrr(stock_code, stock_name, corp_cls, bsns_year, total_emp) values('"+str(row[0])+"', '"+str(row[1])+"', '"+(row[2])+"', '"+bsns_year+"', '"+str(row[3])+"')")
