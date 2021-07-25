@@ -42,7 +42,7 @@ for corp_code in corp_code_dic.values():
         else:
             continue
         df.append([data["stock_code"], data["stock_name"], corp_cls, corp_code])
-        print(data["stock_code"], data["stock_name"], corp_cls, corp_code)
+        print(data["stock_code"], data["stock_name"], corp_cls, corp_code, '\n')
         
         time.sleep(0.61) #크롤링 속도 제한
         
