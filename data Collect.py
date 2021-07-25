@@ -4,17 +4,18 @@ import requests
 from xml.etree import ElementTree
 import json
 import time
+import traceback
 
 def reprt_code_chk():
     
-    year = str(input("보고서 종류를 입력하세요(0:사업보고서, 1:1분기보고서, 2:반기보고서, 3:3분기보고서):"))
-    if year == "0":
+    quarter = str(input("보고서 종류를 입력하세요(0:사업보고서, 1:1분기보고서, 2:반기보고서, 3:3분기보고서):"))
+    if quarter == "0":
         return "11011"
-    elif year == "1":
+    elif quarter == "1":
         return "11013"
-    elif year == "2":
+    elif quarter == "2":
         return "11012"
-    elif year == "3":
+    elif quarter == "3":
         return "11014"
     else:
         print("잘못 입력하셨습니다.")
@@ -35,27 +36,19 @@ cur = conn.cursor()
 cur.execute("select * from stock_info")
 
 corp_code_dic = {}
-while True:
-    row = cur.fetchone()
-    
-    if row == None:
-        break
-    
-    stock_code = row[0]
-    corp_code_dic[stock_code] = [row[1], row[2], row[3]]
-    print(stock_code, ": ", corp_code_dic[stock_code])
-    
+stock_info = cur.fetchall()
+print("rows of data: "+str(len(stock_info)))
 conn.close()
 
-#HRR 기초 자료 수집
-df=[]
-for k, v in corp_code_dic.items():
+#기초 자료 수집
+df = []
+for i, j, k, l in stock_info:
     try:
-        stock_code = k
-        stock_name = v[0]
-        corp_cls = v[1]
-        corp_code = v[2]
-        print("corp_code:", v[0], "corp_cls",v[1])
+        stock_code = i
+        stock_name = j
+        corp_cls = k
+        corp_code = l
+        print("stock_name:", j, "corp_cls:", k)
         api = "https://opendart.fss.or.kr/api/empSttus.json?crtfc_key={crtfc_key}&corp_code={corp_code}&bsns_year={bsns_year}&reprt_code={reprt_code}"
         url = api.format(crtfc_key=crtfc_key, corp_code=corp_code, bsns_year=bsns_year, reprt_code=reprt_code)
         print(url)
@@ -65,15 +58,19 @@ for k, v in corp_code_dic.items():
         for num in data["list"]:
             if "합계" in num.get("fo_bbm") or "총계" in num.get("fo_bbm"):
                 continue
-            num_total += int(num.get("sm").replace(',', ''))
+            num = num.get("sm")
+            num = int(num.replace(',', '')) if num != "-" else 0
+            num_total += num
             print(num_total)
             
         df.append([stock_code, stock_name, corp_cls, num_total])
-        print(stock_code, stock_name, corp_cls, num_total)
+        print(stock_code, stock_name, corp_cls, num_total, '\n')
         
         time.sleep(0.61) #크롤링 속도 제한
         
     except:
+        traceback.print_stack()
+        traceback.print_exc()
         continue
     
 #DBMS에 저장
@@ -81,7 +78,13 @@ conn = connect_db()
 cur = conn.cursor()
 
 for row in df:
-    cur.execute("insert into hrr(stock_code, stock_name, corp_cls, bsns_year, total_emp) values('"+str(row[0])+"', '"+str(row[1])+"', '"+(row[2])+"', '"+bsns_year+"', '"+str(row[3])+"')")
-
+    try:
+        cur.execute("insert into hrr(stock_code, stock_name, corp_cls, bsns_year, reprt_code, total_emp) values('"+str(row[0])+"', '"+str(row[1])+"', '"+(row[2])+"', '"+bsns_year+"', '"+reprt_code+"', '"+str(row[3])+"')")
+        
+    except:
+        traceback.print_stack()
+        traceback.print_exc()
+        continue
+    
 conn.commit()
 conn.close()
