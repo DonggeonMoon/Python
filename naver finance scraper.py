@@ -1,4 +1,5 @@
 from connect_info import *
+import pymysql
 import urllib.request
 from bs4 import BeautifulSoup
 import os, re, datetime
