@@ -37,7 +37,8 @@ for row in stock_info:
             overview.append(data1[i].text)
         overview = '\"' + ' '.join(overview) + '\"'
 
-        df1.append([row[1], overview])
+        df1.append([row[0], overview])
+        
         print(overview)
         
         #지분율 추출
@@ -46,6 +47,7 @@ for row in stock_info:
                 share = [row[0], row[1], datetime.date.today().strftime("%y%m%d"), i.attrs['title'], j.text.strip()]
                 df2.append(share)
                 print(share)
+                
             else:
                 continue
         
@@ -56,9 +58,18 @@ for row in stock_info:
 conn = connect_db()
 cur = conn.cursor()
 
-for row in df:
+for row in df1:
     try:
-        cur.execute()
+        cur.execute("update stock_info set overivew = "+str(row[1])+" where stock_code = "+str(row[0]))
+        
+    except:
+        traceback.print_stack()
+        traceback.print_exc()
+        continue
+    
+for row in df2:
+    try:
+        cur.execute("insert share(stock_code, stock_name, date, holder_name, share) values("+str(row[0])+", "+str(row[1])+", "+str(row[2])+", "+str(row[3])+", "+row[4]+")")
         
     except:
         traceback.print_stack()
