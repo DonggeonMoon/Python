@@ -1,8 +1,7 @@
 from connect_info import *
-import pymysql
 import urllib.request
 from bs4 import BeautifulSoup
-import os, re, datetime
+import pymysql, os, re, datetime, traceback
 
 def connect_db():
     
@@ -36,7 +35,7 @@ for row in stock_info:
         overview = []
         for i in range(0, len(data1)):
             overview.append(data1[i].text)
-        overview = '\"' + ' '.join(overview) + '\"'
+        overview = ' '.join(overview).replace('\'', '\\\'')
 
         df1.append([row[0], overview])
         
@@ -61,7 +60,9 @@ cur = conn.cursor()
 
 for row in df1:
     try:
-        cur.execute("update stock_info set overivew = "+str(row[1])+" where stock_code = "+str(row[0]))
+        sql = "update stock_info set overview = '{}' where stock_code = '{}'".format(str(row[1]), str(row[0]))
+        print(sql)
+        cur.execute(sql)
         
     except:
         traceback.print_stack()
@@ -70,7 +71,12 @@ for row in df1:
     
 for row in df2:
     try:
-        cur.execute("insert share(stock_code, stock_name, date, holder_name, share) values("+str(row[0])+", "+str(row[1])+", "+str(row[2])+", "+str(row[3])+", "+row[4]+")")
+        if len(row[4]) == 0:
+            sql = "insert share(stock_code, stock_name, date, holder_name) values('{}', '{}', '{}', '{}')".format(str(row[0]), str(row[1]), str(row[2]), str(row[3]))
+        else:
+            sql = "insert share(stock_code, stock_name, date, holder_name, share) values('{}', '{}', '{}', '{}', '{}')".format(str(row[0]), str(row[1]), str(row[2]), str(row[3]), str(row[4]))
+        print(sql)
+        cur.execute(sql)
         
     except:
         traceback.print_stack()
