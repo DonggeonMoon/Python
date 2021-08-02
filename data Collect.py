@@ -1,10 +1,7 @@
 from connect_info import *
-import pymysql
-import requests
 from xml.etree import ElementTree
-import json
-import time
-import traceback
+
+import pymysql, requests, json, time, traceback
 
 def reprt_code_chk():
     
@@ -30,7 +27,7 @@ crtfc_key = connect_info["crtfc_key"] #API 인증키(openapi.dart.or.kr에서 �
 bsns_year = str(input("연도를 입력하세요:")) #사업연도
 reprt_code = reprt_code_chk() #보고서 코드
 
-#종목정보 DBMS에서 불러오기
+#DBMS에서 종목정보 불러오기
 conn = connect_db()
 cur = conn.cursor()
 cur.execute("select * from stock_info")
