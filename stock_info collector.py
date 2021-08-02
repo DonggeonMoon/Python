@@ -1,10 +1,7 @@
 from connect_info import *
-import requests
-import zipfile
 from xml.etree import ElementTree
-import json
-import pymysql
-import time
+
+import requests, zipfile, json, pymysql, time
 
 #고유번호 Zip 파일 내려받기
 crtfc_key = connect_info["crtfc_key"] #API 인증키(openapi.dart.or.kr에서 발급)
@@ -25,7 +22,7 @@ for element in iter_element:
     stock_code = element.find("stock_code").text
     corp_code_dic[stock_code] = element.find("corp_code").text
     print(stock_code + ": " + corp_code_dic[stock_code])
-
+    
 #고유번호로 법인구분 수집
 df = []
 for corp_code in corp_code_dic.values():
@@ -34,7 +31,7 @@ for corp_code in corp_code_dic.values():
         url = api.format(crtfc_key=crtfc_key, corp_code=corp_code)
         response = requests.get(url).text
         data = json.loads(response)
-
+        
         if data["corp_cls"] =="Y":
             corp_cls = "KOSPI"
         elif data["corp_cls"] =="K":
@@ -48,7 +45,7 @@ for corp_code in corp_code_dic.values():
         
     except:
         continue
-
+    
 #DBMS에 저장
 conn = pymysql.connect(host=connect_info["host"], user=connect_info["user"], password=connect_info["password"], db=connect_info["db"], charset=connect_info["charset"])
 cur = conn.cursor()
