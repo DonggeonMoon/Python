@@ -1,8 +1,9 @@
 from connect_info import *
-import os, re, time, pymysql, traceback
-import urllib.request
 from multiprocessing import Pool
 from functools import partial
+
+import os, re, time, pymysql, traceback
+import urllib.request
 
 def connect_db():
     
@@ -10,11 +11,13 @@ def connect_db():
     return conn
 
 def adjustedStockPrice(number, date):
-
+    
+    #DBMS에서 종목정보 불러오기
     conn = connect_db()
     cur = conn.cursor()
     cur.execute("select stock_code, stock_name, corp_cls from stock_info")
     df = []
+    
     while True:
         row = cur.fetchone()
         if row == None:
@@ -47,12 +50,14 @@ def adjustedStockPrice(number, date):
     return df
 
 if __name__=='__main__':
+    
     start_time = time.time()
     date = input("수집할 수정주가 일자를 입력하세요. (ex: 20200102):")
     pool = Pool(int(os.environ['NUMBER_OF_PROCESSORS']))
     func = partial(adjustedStockPrice, date=date)
     result = pool.map(func, list(range(1, int(os.environ['NUMBER_OF_PROCESSORS']) + 1)))
-
+    
+    #DBMS에 저장
     conn =  connect_db()
     cur = conn.cursor()
     try:
@@ -63,9 +68,10 @@ if __name__=='__main__':
                     continue
                 sql = "insert into stock_price values('{}', '{}', '{}', '{}', {})".format(j[0], j[1], j[2], date, j[3])
                 cur.execute(sql)
+                
     except:
         traceback.print_stack()
         traceback.print_exc()
-    
+        
     conn.commit()
     conn.close()
