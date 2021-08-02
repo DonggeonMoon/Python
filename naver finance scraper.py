@@ -1,6 +1,7 @@
 from connect_info import *
-import urllib.request
 from bs4 import BeautifulSoup
+
+import urllib.request
 import pymysql, os, re, datetime, traceback
 
 def connect_db():
@@ -29,31 +30,30 @@ for row in stock_info:
         data3 = soup.select("#cTB13 > tbody > tr > td:nth-child(3)")
         
         print(row[1], '\n')
-
         
         #기업개요 추출
         overview = []
         for i in range(0, len(data1)):
             overview.append(data1[i].text)
         overview = ' '.join(overview).replace('\'', '\\\'')
-
+        
         df1.append([row[0], overview])
         
         print(overview)
         
         #지분율 추출
         for i, j in zip(data2, data3):
-            if i.attrs['title'] != '':                    
+            if i.attrs['title'] != '':
                 share = [row[0], row[1], datetime.date.today().strftime("%y%m%d"), i.attrs['title'], j.text.strip()]
                 df2.append(share)
                 print(share)
                 
             else:
                 continue
-        
+            
     except:
         continue
-
+    
 #DBMS에 저장
 conn = connect_db()
 cur = conn.cursor()
