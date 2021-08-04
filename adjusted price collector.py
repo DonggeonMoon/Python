@@ -51,7 +51,7 @@ def adjustedStockPrice(number, date):
             print("error")
             continue
 
-    print("Process %d (%d ~ %d) completed!" % (number, start_number, end_number))
+    print("Process {} ({} ~ {}) completed!".format(number, start_number, end_number))
     return df
 
 
