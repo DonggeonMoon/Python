@@ -24,7 +24,7 @@ def adjustedStockPrice(number, date):
 
     while True:
         row = cur.fetchone()
-        if row == None:
+        if row is None:
             break
         df.append([row[0], row[1], row[2]])
 
@@ -37,10 +37,10 @@ def adjustedStockPrice(number, date):
     df = df[start_number:end_number]
 
     # 네이버 금융 주가 차트에서 수정주가 데이터 수집
-    for i in range(0, len(df)):
+    for i in range(len(df)):
         try:
-            data = str(urllib.request.urlopen("https://fchart.stock.naver.com/sise.nhn?symbol=" + df[i][
-                0] + "&timeframe=day&count=3000&requestType=0").read())
+            data = str(urllib.request.urlopen("https://fchart.stock.naver.com/sise.nhn?symbol=" + df[i][0]
+                                              + "&timeframe=day&count=3000&requestType=0").read())
             price = re.search(r'' + date + '\|[0-9]+\|[0-9]+\|[0-9]+\|[0-9]+', data).group()
             price2 = re.search(r'\|[0-9]+$', price).group().strip('|')
             df[i].append(price2)
