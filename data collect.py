@@ -36,7 +36,6 @@ conn = connect_db()
 cur = conn.cursor()
 cur.execute("select stock_code, stock_name, corp_cls, corp_code from stock_info")
 
-corp_code_dic = {}
 stock_info = cur.fetchall()
 print("rows of data: " + str(len(stock_info)))
 conn.close()
@@ -84,9 +83,9 @@ cur = conn.cursor()
 for row in df:
     try:
         cur.execute(
-            "insert into hrr(stock_code, stock_name, corp_cls, bsns_year, reprt_code, total_emp) values('" + str(
-                row[0]) + "', '" + str(row[1]) + "', '" + (
-                row[2]) + "', '" + bsns_year + "', '" + reprt_code + "', '" + str(row[3]) + "')")
+            "insert into hrr(stock_code, stock_name, corp_cls, bsns_year, reprt_code, total_emp) values('" +
+            str(row[0]) + "', '" + str(row[1]) + "', '" + str(row[2]) + "', '" + bsns_year + "', '" +
+            reprt_code + "', '" + str(row[3]) + "')")
 
     except:
         traceback.print_stack()
