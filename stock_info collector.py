@@ -56,7 +56,7 @@ conn = pymysql.connect(host=connect_info["host"], user=connect_info["user"], pas
 cur = conn.cursor()
 
 for row in df:
-    cur.execute("insert into stock_info values('" + row[0] + "', '" + row[1] + "', '" + row[2] + "', '" + row[3] + "')")
+    cur.execute("insert into stock_info values('{}', '{}', '{}', '{}')".format(row[0], row[1], row[2], row[3)
 
 conn.commit()
 conn.close()
