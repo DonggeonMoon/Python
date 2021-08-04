@@ -15,7 +15,7 @@ def connect_db():
 # 종목정보 DBMS에서 불러오기
 conn = connect_db()
 cur = conn.cursor()
-cur.execute("select * from stock_info")
+cur.execute("select stock_code, stock_name from stock_info")
 
 stock_info = cur.fetchall()
 print("rows of data: " + str(len(stock_info)))
