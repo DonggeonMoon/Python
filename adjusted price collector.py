@@ -21,21 +21,21 @@ def adjustedStockPrice(number, date):
     cur = conn.cursor()
     cur.execute("select stock_code, stock_name, corp_cls from stock_info")
     df = []
-
+    
     while True:
         row = cur.fetchone()
         if row is None:
             break
         df.append([row[0], row[1], row[2]])
-
+        
     conn.close()
-
+    
     total_number = len(df)
     start_number = int(total_number / 4 * (number - 1))
     end_number = int(total_number / 4 * number)
     print("Process(" + str(start_number) + " ~ " + str(end_number) + ") started!")
     df = df[start_number:end_number]
-
+    
     # 네이버 금융 주가 차트에서 수정주가 데이터 수집
     for i in range(len(df)):
         try:
@@ -45,24 +45,24 @@ def adjustedStockPrice(number, date):
             price2 = re.search(r'\|[0-9]+$', price).group().strip('|')
             df[i].append(price2)
             print(df[i])
-
+            
         except:
             df[i] = df[i]
             print("error")
             continue
-
+        
     print("Process {} ({} ~ {}) completed!".format(number, start_number, end_number))
     return df
 
 
 if __name__ == '__main__':
-
+    
     start_time = time.time()
-    date = input("수집할 수정주가 일자를 입력하세요. (ex: 20200102):")
+    date = input("수집할 수정주가 일자를 입력하세요(ex: 20200102):")
     pool = Pool(int(os.environ['NUMBER_OF_PROCESSORS']))
     func = partial(adjustedStockPrice, date=date)
     result = pool.map(func, list(range(1, int(os.environ['NUMBER_OF_PROCESSORS']) + 1)))
-
+    
     # DBMS에 저장
     conn = connect_db()
     cur = conn.cursor()
@@ -74,10 +74,10 @@ if __name__ == '__main__':
                     continue
                 sql = "insert into stock_price values('{}', '{}', '{}', '{}', {})".format(j[0], j[1], j[2], date, j[3])
                 cur.execute(sql)
-
+                
     except:
         traceback.print_stack()
         traceback.print_exc()
-
+        
     conn.commit()
     conn.close()
