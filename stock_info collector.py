@@ -60,5 +60,4 @@ for row in df:
                                                                                
 conn.commit()
 conn.close()
-                                                                               
 print("작업 완료")
