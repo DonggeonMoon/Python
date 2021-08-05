@@ -15,7 +15,7 @@ url = api.format(crtfc_key=crtfc_key)
 file_name = ".\\temp\\CORPCODE.zip"
 with open(file_name, "wb") as f:
     f.write(requests.get(url).content)
-
+    
 # 종목코드, 고유번호 딕셔너리 생성
 xml = zipfile.ZipFile(file_name).read("CORPCODE.xml")
 root_element = ElementTree.fromstring(xml)
@@ -26,7 +26,7 @@ for element in iter_element:
     stock_code = element.find("stock_code").text
     corp_code_dic[stock_code] = element.find("corp_code").text
     print(stock_code + ": " + corp_code_dic[stock_code])
-
+    
 # 고유번호로 법인구분 수집
 df = []
 for corp_code in corp_code_dic.values():
@@ -44,21 +44,20 @@ for corp_code in corp_code_dic.values():
             continue
         df.append([data["stock_code"], data["stock_name"], corp_cls, corp_code])
         print(data["stock_code"], data["stock_name"], corp_cls, corp_code, '\n')
-
+        
         time.sleep(0.61)  # 크롤링 속도 제한
-
+        
     except:
         continue
-
+    
 # DBMS에 저장
 conn = pymysql.connect(host=connect_info["host"], user=connect_info["user"], password=connect_info["password"],
                        db=connect_info["db"], charset=connect_info["charset"])
 cur = conn.cursor()
 
 for row in df:
-    cur.execute("insert into stock_info values('{}', '{}', '{}', '{}')".format(row[0], row[1], row[2], row[3)
-
+    cur.execute("insert into stock_info values('{}', '{}', '{}', '{}')".format(row[0], row[1], row[2], row[3])
+                                                                               
 conn.commit()
 conn.close()
-
 print("작업 완료")
