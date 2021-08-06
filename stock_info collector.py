@@ -11,6 +11,7 @@ import zipfile
 crtfc_key = connect_info["crtfc_key"]  # API 인증키(openapi.dart.or.kr에서 발급)
 api = "https://opendart.fss.or.kr/api/corpCode.xml?crtfc_key={crtfc_key}"
 url = api.format(crtfc_key=crtfc_key)
+print(url)
 
 file_name = ".\\temp\\CORPCODE.zip"
 with open(file_name, "wb") as f:
@@ -56,7 +57,14 @@ conn = pymysql.connect(host=connect_info["host"], user=connect_info["user"], pas
 cur = conn.cursor()
 
 for row in df:
-    cur.execute("insert into stock_info values('{}', '{}', '{}', '{}')".format(row[0], row[1], row[2], row[3])
+    try:
+        cur.execute("update stock_info set stock_name='{}', \
+                    corp_cls='{}', \
+                    corp_code='{}' \
+                    where stock_code='{}'").format(row[1], row[2], row[3], row[0])
+    except:
+        cur.execute("insert into stock_info(stock_code, stock_name, corp_cls, corp_code) \
+                    values('{}', '{}', '{}', '{}')").format(row[0], row[1], row[2], row[3])
                                                                                
 conn.commit()
 conn.close()
