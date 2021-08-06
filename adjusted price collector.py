@@ -55,29 +55,28 @@ def adjustedStockPrice(number, date):
     return df
 
 
-if __name__ == '__main__':
+start_time = time.time()
+date = input("수집할 수정주가 일자를 입력하세요(ex: 20200102):")
+pool = Pool(int(os.environ['NUMBER_OF_PROCESSORS']))
+func = partial(adjustedStockPrice, date=date)
+result = pool.map(func, list(range(1, int(os.environ['NUMBER_OF_PROCESSORS']) + 1)))
+
+# DBMS에 저장
+conn = connect_db()
+cur = conn.cursor()
+try:
+    for i in result:
+        for j in i:
+            print(j)
+            if len(j) == 3:
+                continue
+            sql = "insert into stock_price values('{}', '{}', '{}', '{}', {})".format(j[0], j[1], j[2], date, j[3])
+            cur.execute(sql)
+            
+except:
+    traceback.print_stack()
+    traceback.print_exc()
     
-    start_time = time.time()
-    date = input("수집할 수정주가 일자를 입력하세요(ex: 20200102):")
-    pool = Pool(int(os.environ['NUMBER_OF_PROCESSORS']))
-    func = partial(adjustedStockPrice, date=date)
-    result = pool.map(func, list(range(1, int(os.environ['NUMBER_OF_PROCESSORS']) + 1)))
-    
-    # DBMS에 저장
-    conn = connect_db()
-    cur = conn.cursor()
-    try:
-        for i in result:
-            for j in i:
-                print(j)
-                if len(j) == 3:
-                    continue
-                sql = "insert into stock_price values('{}', '{}', '{}', '{}', {})".format(j[0], j[1], j[2], date, j[3])
-                cur.execute(sql)
-                
-    except:
-        traceback.print_stack()
-        traceback.print_exc()
-        
-    conn.commit()
-    conn.close()
+conn.commit()
+conn.close()
+
