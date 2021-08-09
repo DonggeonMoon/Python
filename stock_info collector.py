@@ -58,14 +58,15 @@ cur = conn.cursor()
 
 for row in df:
     try:
+        cur.execute("insert into stock_info(stock_code, stock_name, corp_cls, corp_code) \
+                    values('{}', '{}', '{}', '{}')".format(row[0], row[1], row[2], row[3]))
+        
+    except:
         cur.execute("update stock_info set stock_name='{}', \
                     corp_cls='{}', \
                     corp_code='{}' \
-                    where stock_code='{}'").format(row[1], row[2], row[3], row[0])
-    except:
-        cur.execute("insert into stock_info(stock_code, stock_name, corp_cls, corp_code) \
-                    values('{}', '{}', '{}', '{}')").format(row[0], row[1], row[2], row[3])
-                                                                               
+                    where stock_code='{}'".format(row[1], row[2], row[3], row[0]))
+        
 conn.commit()
 conn.close()
 print("작업 완료")
