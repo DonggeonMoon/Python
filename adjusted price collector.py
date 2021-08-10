@@ -47,7 +47,6 @@ def adjustedStockPrice(number, date):
             print(df[i])
             
         except:
-            df[i] = df[i]
             print('error')
             continue
         
