@@ -33,7 +33,7 @@ def adjustedStockPrice(number, date):
     total_number = len(df)
     start_number = int(total_number / 4 * (number - 1))
     end_number = int(total_number / 4 * number)
-    print('Process(' + str(start_number) + ' ~ ' + str(end_number) + ') started!')
+    print('Process {} ({} ~ {}) started!'.format(number, start_number, end_number))
     df = df[start_number:end_number]
     
     # 네이버 금융 주가 차트에서 수정주가 데이터 수집
