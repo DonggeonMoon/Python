@@ -19,7 +19,7 @@ cur.execute("select stock_code, stock_name from stock_info")
 
 stock_info = cur.fetchall()
 conn.close()
-print('number of rows: ' + str(len(stock_info)))
+print('number of rows: {}'.format(str(len(stock_info))))
 
 df1 = []
 df2 = []
