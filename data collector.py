@@ -37,7 +37,7 @@ cur = conn.cursor()
 cur.execute("select stock_code, stock_name, corp_cls, corp_code from stock_info")
 
 stock_info = cur.fetchall()
-print('rows of data: ' + str(len(stock_info)))
+print('rows of data: {}'.format(str(len(stock_info))))
 conn.close()
 
 # 기초 자료 수집
@@ -48,7 +48,8 @@ for i, j, k, l in stock_info:
         stock_name = j
         corp_cls = k
         corp_code = l
-        print('stock_name:', j, 'corp_cls:', k)
+        print('stock_name: {}'.format(j))
+        print('corp_cls: {}'.format(k))
         api = 'https://opendart.fss.or.kr/api/empSttus.json?crtfc_key={crtfc_key}' \
               '&corp_code={corp_code}' \
               '&bsns_year={bsns_year}' \
