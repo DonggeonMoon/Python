@@ -26,7 +26,7 @@ corp_code_dic = {}
 for element in iter_element:
     stock_code = element.find('stock_code').text
     corp_code_dic[stock_code] = element.find('corp_code').text
-    print(stock_code + ': ' + corp_code_dic[stock_code])
+    print('{}: {}'.format(stock_code, corp_code_dic[stock_code]))
     
 # 고유번호로 법인구분 수집
 df = []
