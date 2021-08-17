@@ -56,7 +56,7 @@ def adjustedStockPrice(number, date):
 
 if __name__ == '__main__':
     start_time = time.time()
-    date = input("수집할 수정주가 일자를 입력하세요(ex: 20200102):")
+    date = input("수집할 수정주가 일자를 입력하세요(ex: 20210102):")
     pool = Pool(int(os.environ['NUMBER_OF_PROCESSORS']))
     func = partial(adjustedStockPrice, date=date)
     result = pool.map(func, list(range(1, int(os.environ['NUMBER_OF_PROCESSORS']) + 1)))
