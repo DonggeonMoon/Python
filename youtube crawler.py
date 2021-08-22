@@ -8,8 +8,12 @@ driver.implicitly_wait(3)
 
 prev_height = driver.execute_script("return document.body.scrolHeight")
 
-while True:
+for i in range(0, 10000):
     driver.execute_script("window.scrollBy(0, 10000)")
+    print(i)
 
+text = driver.find_element_by_css_selector("#content").text
+
+print(text)
 
 print("완료")
